@@ -5,6 +5,8 @@ from pydantic import BaseModel
 from app.agents.backend_agent_queue import backend_agent_task_queue
 import pdfplumber
 import io
+import uuid
+from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
@@ -12,6 +14,8 @@ class ContentRequest(BaseModel):
     content: str
 
 CONTENT_PARSER_AGENT_ADDRESS = "agent1qf80v4k92z2tu7pl4smc9pwgq8kdg9m67u42tas5u4xu64vgf9nt6fxu3k9"
+
+key_ideas_store = {}
 
 @router.post("/upload-pdf/")
 async def upload_pdf(file: UploadFile = File(...), grade_level: str = Form()):
@@ -29,13 +33,23 @@ async def upload_pdf(file: UploadFile = File(...), grade_level: str = Form()):
 
     if not full_text.strip():
         return {"error": "No text found in PDF."}
+    
+    upload_id = str(uuid.uuid4())
 
     # Send the extracted text to backend agent queue
     await backend_agent_task_queue.put({
         "type": "send_content",
         "to": CONTENT_PARSER_AGENT_ADDRESS,
         "content": full_text,
-        "grade_level": grade_level
+        "grade_level": grade_level,
+        "upload_id": upload_id,
     })
 
-    return {"message": "PDF uploaded, text extracted, and sent to backend agent."}
+    return {"message": "PDF uploaded, text extracted, and sent to backend agent.", "upload_id": upload_id}
+
+
+@router.get("/get-key-ideas/{upload_id}")
+async def get_key_ideas(upload_id: str):
+    if upload_id in key_ideas_store:
+        return {"key_ideas": key_ideas_store[upload_id]}
+    return JSONResponse(status_code=202, content={"message": "Still processing..."})
