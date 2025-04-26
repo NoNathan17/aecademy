@@ -11,6 +11,8 @@ export default function DashboardPage() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState('University');
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [keyIdeas, setKeyIdeas] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const selectedFile = event.target.files?.[0];
@@ -26,6 +28,24 @@ export default function DashboardPage() {
   function handleSelectLevel(level: string) {
     setSelectedLevel(level);
     setDropdownOpen(false);
+  }
+
+  async function handlePDF(file: File, gradeLevel: string) {
+    const formData = new FormData()
+    formData.append("file", file);
+    formData.append("grade_level", gradeLevel);
+
+    const response = await fetch('http://localhost:8000/upload-pdf/', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to upload PDF')
+    }
+
+    const data = await response.json()
+    return data.upload_id;
   }
 
   useEffect(() => {
@@ -78,7 +98,39 @@ export default function DashboardPage() {
 
           {/* Right: Send */}
           <button
-            onClick={() => console.log('Process file here')}
+            onClick={async () => {
+              if (!file) return;
+              setLoading(true);
+              setKeyIdeas([]);
+              try {
+                const uploadId = await handlePDF(file, selectedLevel);
+                // Start polling every 3 seconds
+                const intervalId = setInterval(async () => {
+                  try {
+                    const res = await fetch(`http://localhost:8000/get-key-ideas/${uploadId}`);
+                    if (res.ok) {
+                      const result = await res.json();
+                      if (result.key_ideas) {
+                        setKeyIdeas(result.key_ideas);
+                        clearInterval(intervalId);
+                        setLoading(false);
+                      }
+                    } else if (res.status !== 202) {
+                      throw new Error('Failed to get key ideas');
+                    }
+                  } catch (error) {
+                    console.error(error);
+                    clearInterval(intervalId);
+                    setLoading(false);
+                  }
+                }, 3000);
+
+              } catch (error) {
+                console.error(error);
+                alert('Something went wrong uploading the PDF.');
+                setLoading(false);
+              }
+            }}
             disabled={!file}
             className={`ml-4 p-2 rounded-full ${file ? "bg-[#2F334E]" : "bg-gray-300"} transition-all`}
           >
@@ -121,10 +173,16 @@ export default function DashboardPage() {
           className="hidden"
         />
 
-        {/* Show PDF if selected */}
-        {file && (
-          <div className="mt-8 w-full max-w-4xl">
-            <PdfViewer file={file} />
+        {loading && <p className="mt-8 text-xl">Loading...</p>}
+
+        {!loading && keyIdeas.length > 0 && (
+          <div className="mt-8 w-full max-w-2xl">
+            <h2 className="text-3xl font-bold mb-4">Key Ideas ✨</h2>
+            <ul className="list-disc list-inside text-left text-lg space-y-2">
+              {keyIdeas.map((idea, idx) => (
+                <li key={idx}>{idea}</li>
+              ))}
+            </ul>
           </div>
         )}
       </div>

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 type PdfViewerProps = {
   file: File | string;
@@ -18,11 +18,11 @@ export default function PdfViewer({ file }: PdfViewerProps) {
 
   return (
     <div className="flex flex-col items-center">
-      <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
+      {/* <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
         {Array.from(new Array(numPages), (el, index) => (
           <Page key={`page_${index + 1}`} pageNumber={index + 1} />
         ))}
-      </Document>
+      </Document> */}
     </div>
   );
 }
