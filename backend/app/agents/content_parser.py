@@ -13,6 +13,7 @@ class ContentRequest(Model):
 
 class ContentResponse(Model):
     key_ideas: list
+    upload_id: str
 
 # create agent
 content_parser = Agent(
@@ -83,6 +84,8 @@ async def handle_content(ctx: Context, sender: str, msg: ContentRequest):
     ctx.logger.info(f"Received content to parse from {sender}")
     ctx.logger.info(f"Grade Level requested: {msg.grade_level}")
 
+    upload_id = ctx.metadata.get('upload_id') if ctx.metadata else None
+
     chunks = chunk_text(msg.content)
     all_key_ideas = []
 
@@ -94,6 +97,11 @@ async def handle_content(ctx: Context, sender: str, msg: ContentRequest):
             all_key_ideas.extend(key_ideas)
 
         ctx.logger.info(f"Parsed Important Topics: {key_ideas}")
+
+        if upload_id:
+            await ctx.send(sender, ContentResponse(key_ideas=all_key_ideas, upload_id=upload_id))
+        else:
+            ctx.logger.error("No upload_id found in metadata. Cannot send upload_id back.")
 
         await ctx.send(sender, ContentResponse(key_ideas=key_ideas))
 
