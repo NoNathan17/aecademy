@@ -9,7 +9,7 @@ export default function Home() {
     style={{ backgroundImage: "url('/Group 5.svg')"}}>
 
       <main className="w-screen h-screen">      
-      <header className="flex items-center pt-12 px-10">
+      <header className="flex items-center pt-0 px-10">
         <div className="flex-grow flex justify-start pl-10">
           <Image
             src="/aecademy.svg"
@@ -60,16 +60,16 @@ export default function Home() {
 
 
         </div>
-        <div>
+        <footer >
           <Image
           src="/Group 7.svg"
           alt="Slide preview"
           width={1028}
           height={1028}
-          className="bottom-0 left-1/2 -translate-x-1/2"
+          className="fixed bottom-0 left-1/2 -translate-x-1/2"
           />
           
-        </div>
+        </footer>
       </main>
     </div>
   );
