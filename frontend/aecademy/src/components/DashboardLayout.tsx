@@ -17,7 +17,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       if (!isLoaded || !user) return; // Wait for user to be ready
 
       try {
-        const response = await fetch('http://localhost:8000/api/queries', {
+        const response = await fetch('http://localhost:9000/api/queries', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
