@@ -53,7 +53,7 @@ export default function Home() {
           <p className={`${dmSans.className}  text-3xl`}>Taking your education to the next level.</p>
           <Link href="/dashboard">
             <button
-              className={`${dmSans.className} mt-5 text-2xl rounded-lg bg-white text-[#2F334E] py-1 px-6 transition-transform duration-300 hover:scale-105 hover:cursor-pointer`}
+              className={`${dmSans.className} mt-5 text-lg h-[48px] rounded-lg bg-white text-[#2F334E] py-1 px-6 transition-transform duration-300 hover:scale-105 hover:cursor-pointer`}
             >
               Start Here
             </button>
