@@ -9,7 +9,7 @@ export default function Home() {
     style={{ backgroundImage: "url('/Group 5.svg')"}}>
 
       <main className="w-screen h-screen">      
-      <header className="flex items-center pt-12 px-10">
+      <header className="flex items-center pt-0 px-10">
         <div className="flex-grow flex justify-start pl-10">
           <Image
             src="/aecademy.svg"
