@@ -1,5 +1,5 @@
 
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter, UploadFile, File, Form
 from pydantic import BaseModel
 # from app.services.send_to_agents import send_to_content_parser
 from app.agents.backend_agent_queue import backend_agent_task_queue
@@ -14,7 +14,7 @@ class ContentRequest(BaseModel):
 CONTENT_PARSER_AGENT_ADDRESS = "agent1qf80v4k92z2tu7pl4smc9pwgq8kdg9m67u42tas5u4xu64vgf9nt6fxu3k9"
 
 @router.post("/upload-pdf/")
-async def upload_pdf(file: UploadFile = File(...)):
+async def upload_pdf(file: UploadFile = File(...), grade_level: str = Form()):
     if not file.filename.endswith(".pdf"):
         return {"error": "Only PDF files are supported."}
     
@@ -34,7 +34,8 @@ async def upload_pdf(file: UploadFile = File(...)):
     await backend_agent_task_queue.put({
         "type": "send_content",
         "to": CONTENT_PARSER_AGENT_ADDRESS,
-        "content": full_text
+        "content": full_text,
+        "grade_level": grade_level
     })
 
     return {"message": "PDF uploaded, text extracted, and sent to backend agent."}
