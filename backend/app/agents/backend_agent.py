@@ -1,6 +1,6 @@
 from uagents import Agent, Context, Model
 from app.agents.backend_agent_queue import backend_agent_task_queue
-from app.routes.upload import key_ideas_store
+from app.routes.api import key_ideas_store
 import asyncio
 
 backend_agent = Agent(
