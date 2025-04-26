@@ -6,7 +6,7 @@ import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@cl
 
 export default function Home() {
   return (
-    <div className="bg-[#2F334E] min-h-screen w-screen flex flex-col bg-no-repeat bg-cover bg-center"
+    <div className="bg-[#2F334E] min-h-screen w-screen flex flex-col justify-between bg-no-repeat bg-cover bg-center"
     style={{ backgroundImage: "url('/Group 5.svg')"}}>
 
       <header className="flex items-center justify-between px-10 pt-8">
@@ -59,14 +59,13 @@ export default function Home() {
             </button>
           </Link>
       </div>
-      <footer className="w-full flex justify-center pb-6">
+      <footer className="w-full flex justify-center">
           <Image
           src="/Group 7.svg"
           alt="Slide preview"
           width={1200}
           height={1200}
           />
-          
         </footer>
     </div>
   );
