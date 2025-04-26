@@ -7,6 +7,7 @@ import pdfplumber
 import io
 import uuid
 from fastapi.responses import JSONResponse
+from app.agents.quiz import quiz_store
 
 router = APIRouter()
 
@@ -53,3 +54,9 @@ async def get_key_ideas(upload_id: str):
     if upload_id in key_ideas_store:
         return {"key_ideas": key_ideas_store[upload_id]}
     return JSONResponse(status_code=202, content={"message": "Still processing..."})
+
+@router.get("/get-quiz/{upload_id}")
+async def get_quiz(upload_id: str):
+    if upload_id in quiz_store:
+        return {"quiz": quiz_store[upload_id]}
+    return JSONResponse(status_code=202, content={"message": "Quiz still being generated..."})
