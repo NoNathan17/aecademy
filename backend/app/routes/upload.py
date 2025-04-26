@@ -1,8 +1,10 @@
 
-from fastapi import APIRouter
+from fastapi import APIRouter, UploadFile, File
 from pydantic import BaseModel
 # from app.services.send_to_agents import send_to_content_parser
 from app.agents.backend_agent_queue import backend_agent_task_queue
+import pdfplumber
+import io
 
 router = APIRouter()
 
@@ -11,14 +13,28 @@ class ContentRequest(BaseModel):
 
 CONTENT_PARSER_AGENT_ADDRESS = "agent1qf80v4k92z2tu7pl4smc9pwgq8kdg9m67u42tas5u4xu64vgf9nt6fxu3k9"
 
-@router.post("/test-content-parser")
-async def test_content_parser(request: ContentRequest):
+@router.post("/upload-pdf/")
+async def upload_pdf(file: UploadFile = File(...)):
+    if not file.filename.endswith(".pdf"):
+        return {"error": "Only PDF files are supported."}
+    
+    # Save uploaded file temporarily
+    contents = await file.read()
+
+    # Use pdfplumber to extract text
+    with pdfplumber.open(io.BytesIO(contents)) as pdf:
+        full_text = ""
+        for page in pdf.pages:
+            full_text += page.extract_text() + "\n"
+
+    if not full_text.strip():
+        return {"error": "No text found in PDF."}
+
+    # Send the extracted text to backend agent queue
     await backend_agent_task_queue.put({
         "type": "send_content",
         "to": CONTENT_PARSER_AGENT_ADDRESS,
-        "content": request.content
+        "content": full_text
     })
 
-    print("Added task to backend_agent_task_queue")
-     
-    return {"message": "Content sent to ContentParserAgent via BackendAgent!"}
+    return {"message": "PDF uploaded, text extracted, and sent to backend agent."}

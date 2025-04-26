@@ -1,4 +1,10 @@
 from uagents import Agent, Context, Model
+import os
+import httpx
+from dotenv import load_dotenv
+
+load_dotenv()
+ASI_ONE_API_KEY = os.getenv("ASI_ONE_API_KEY") 
 
 # what the agent receives
 class ContentRequest(Model):
@@ -15,6 +21,35 @@ content_parser = Agent(
     endpoint=["http://localhost:8001/submit"]
 )
 
+# Async function to call ASI-One LLM
+async def call_asi_llm(prompt: str) -> str:
+    url = "https://api.asi1.ai/v1/chat/completions"
+
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": f"Bearer {ASI_ONE_API_KEY}"
+    }
+
+    payload = {
+        "model": "asi1-mini",
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.7,
+        "stream": False,
+        "max_tokens": 500
+    }
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(url, headers=headers, json=payload)
+        response.raise_for_status()
+        data = response.json()
+
+    try:
+        return data["choices"][0]["message"]["content"]
+    except (KeyError, IndexError):
+        return "Failed to parse LLM output."
+
+
 # log on startup
 @content_parser.on_event("startup")
 async def startup(ctx: Context):
@@ -26,15 +61,23 @@ async def handle_content(ctx: Context, sender: str, msg: ContentRequest):
     ctx.logger.info(f"Received content to parse from {sender}")
     ctx.logger.info(f"Received content: {msg.content}")
 
-    content = msg.content
+    prompt = f"Summarize the following PDF content into 5 key ideas:\n\n{msg.content}"
 
-    # dummy parsing logic
-    sentences = content.split()
-    key_ideas = [sentence.strip() for sentence in sentences if sentence.strip()][:5]
 
-    ctx.logger.info(f"Parsed key ideas: {key_ideas}")
+    try:
+        # Call the Fetch LLM
+        llm_output = await call_asi_llm(prompt)
+        
+        # Process the output into key ideas
+        key_ideas = [idea.strip() for idea in llm_output.split("\n") if idea.strip()][:5]
+        
+        ctx.logger.info(f"Parsed Key Ideas: {key_ideas}")
 
-    await ctx.send(sender, ContentResponse(key_ideas=key_ideas))
+        # Send back to the original sender
+        await ctx.send(sender, ContentResponse(key_ideas=key_ideas))
+
+    except Exception as e:
+        ctx.logger.error(f"Failed to parse content via LLM: {str(e)}")
 
 if __name__ == "__main__":
     content_parser.run()
