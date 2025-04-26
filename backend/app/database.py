@@ -18,7 +18,7 @@ def get_queries_by_user_id(user_id: str):
         results = list(queries_collection.find(
             {"userId": user_id},
             {"_id": 0, "question": 1}
-        )
+        ).sort("_id", -1)
     )
         return results
     except Exception as e:
@@ -44,5 +44,5 @@ def add_query(user_id: str, question: str, answer: str, timestamp: str):
         return None
 
 if __name__ == "__main__":
-    add_query("aiyeah", "How to get Huzz2.pdf", "stop trying", "it wont happen")
-    print(get_queries_by_user_id("aiyeah").reverse())
+    add_query("aiyeah", "How to get Huzz5.pdf", "stop trying", "it wont happen")
+    print(get_queries_by_user_id("aiyeah"))
