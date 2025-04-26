@@ -20,12 +20,13 @@ export default function Home() {
             className=""
           />
         </div>
-        <div className="flex gap-4 pr-10">
+        <div className="flex gap-8 pr-10">
           <SignedIn>
           <UserButton
             appearance={{
               elements: {
-                userButtonBox: "w-15 h-15",
+                avatarBox: "w-20 h-20",   
+                avatarImage: "w-20 h-20", 
                 userButtonTrigger: "p-0"
               },
             }}
@@ -34,13 +35,13 @@ export default function Home() {
 
           <SignedOut>
             <SignInButton>
-              <button className="bg-[#2F334E] border border-white text-white px-4 py-2 rounded hover:scale-110">
+              <button className="border border-white text-white px-4 py-2 rounded transition-transform duration-300 hover:cursor-pointer">
                 Sign In
               </button>
             </SignInButton>
 
             <SignUpButton>
-              <button className="bg-white text-[#2F334E] px-4 py-2 rounded hover:bg-gray-300 hover:scale-110">
+              <button className="border border-white text-white px-4 py-2 rounded transition-transform duration-300 hover:cursor-pointer">
                 Register
               </button>
             </SignUpButton>
@@ -48,26 +49,25 @@ export default function Home() {
         </div>
       </header>
 
-
-
-        <div className=" text-center flex flex-col" style={{ paddingTop: '20vh' }}>
-          <p className={`${dmSans.className} font-bold text-5xl m-5`}>aecademy</p>
-          <p className={`${dmSans.className}  text-2xl`}>Taking your education to the next level.</p>
+      <div>
+        <div className="text-center flex flex-col mt-48">
+          <p className={`${dmSans.className} font-bold text-7xl m-5`}>aecademy</p>
+          <p className={`${dmSans.className}  text-3xl`}>Taking your education to the next level.</p>
           <Link href="/dashboard">
             <button
-              className={`${dmSans.className} mt-5 text-1xl rounded-lg bg-white text-[#2F334E] py-1 px-6 self-center transition-all duration-300 hover:bg-gray-300 hover:scale-110`}
+              className={`${dmSans.className} mt-5 text-2xl rounded-lg bg-white text-[#2F334E] py-1 px-6 transition-transform duration-300 hover:scale-105 hover:cursor-pointer`}
             >
               Start Here
             </button>
           </Link>
-
         </div>
-        <footer >
+      </div>
+        <footer>
           <Image
           src="/Group 7.svg"
           alt="Slide preview"
-          width={1028}
-          height={1028}
+          width={1200}
+          height={1200}
           className="fixed bottom-0 left-1/2 -translate-x-1/2"
           />
           
