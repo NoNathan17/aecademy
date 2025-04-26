@@ -1,7 +1,7 @@
 'use client';
-
+import { DM_Sans } from 'next/font/google';
+const dmSans = DM_Sans({ subsets: ['latin'], weight: ['400', '700'] });
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import Image from 'next/image';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -23,24 +23,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex min-h-screen">
-      <aside className="w-64 bg-white border-r p-4 flex flex-col">
+      <aside className="w-64 bg-[#AAB2C1] border-r p-4 flex flex-col">
         <Image
-          src="/aecademy.svg"
+          src="/aecademy (1).svg"
           alt="Slide preview"
           width={128}
           height={128}
           className="m-auto"
         />
-
         <nav className="flex flex-col gap-2 flex-grow">
-          <Link href="/dashboard" className="text-gray-700 hover:text-black font-medium">
-            + New Chat
-          </Link>
-
-          <div className="mt-6 text-gray-500 uppercase text-xs tracking-wider">
-            My Chats
-          </div>
-
+          <p className={`${dmSans.className}  text-2xl`}>
+            Queries
+          </p>
           {queries.map((query, index) => (
             <div
               key={index}
@@ -52,7 +46,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </nav>
       </aside>
 
-      <main className="flex-1 bg-gray-100 p-8">
+      <main className="flex-1 bg-[#2F334E] p-8">
+      <Image
+          src="/group 9.svg"
+          alt="Slide preview"
+          width={514}
+          height={514}
+          className="m-auto pt-40"
+        />
         {children}
       </main>
     </div>
