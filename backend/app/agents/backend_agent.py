@@ -11,6 +11,7 @@ backend_agent = Agent(
 
 class ContentRequest(Model):
     content: str
+    complexity: str
 
 class ContentResponse(Model):
     key_ideas: list
@@ -24,15 +25,15 @@ async def startup(ctx: Context):
 async def process_queue(ctx: Context):
     while True:
         ctx.logger.info("💥 process_queue is alive and spinning")
-        await asyncio.sleep(2)  # just sleep to keep printing
         task = await backend_agent_task_queue.get()
         ctx.logger.info(f"✅ Picked up task from backend_agent_task_queue: {task}")
 
         if task["type"] == "send_content":
             to_address = task["to"]
             content = task["content"]
+            complexity = task.get("complexity", "intermediate")
 
-            await ctx.send(to_address, ContentRequest(content=content))
+            await ctx.send(to_address, ContentRequest(content=content, complexity=complexity))
             ctx.logger.info(f"Sent ContentRequest to {to_address}")
 
 @backend_agent.on_message(model=ContentResponse)
