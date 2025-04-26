@@ -6,6 +6,9 @@ from dotenv import load_dotenv
 load_dotenv()
 ASI_ONE_API_KEY = os.getenv("ASI_ONE_API_KEY") 
 
+QUIZ_AGENT_ADDRESS = "agent1q0np6mpz2ue7g30lzgue4ep26ht0xga34agczpr0sw5y540fukakk5ftndy"
+QUIZ_AGENT_HTTP_ENDPOINT = "http://localhost:8003/submit"
+
 # what the agent receives
 class ContentRequest(Model):
     content: str
@@ -43,17 +46,16 @@ async def call_asi_llm(prompt: str) -> str:
     }
 
     async with httpx.AsyncClient() as client:
-        try:
-            response = await client.post(url, headers=headers, json=payload)
-            response.raise_for_status()
-            data = response.json()
-            return data["choices"][0]["message"]["content"]
-        except httpx.HTTPStatusError as e:
-            print(f"🔥 HTTP error when calling ASI-One API: {e.response.status_code} {e.response.text}")
-            return "Failed to call LLM"
-        except Exception as e:
-            print(f"🔥 Unexpected error when calling ASI-One: {str(e)}")
-            return "Failed to call LLM"
+            try:
+                response = await client.post(url, headers=headers, json=payload)
+                response.raise_for_status()
+                data = response.json()
+                print(f"🔥 Full ASI-One raw response: {data}")  # Log full response for debug
+                return data["choices"][0]["message"]["content"]
+            except httpx.HTTPStatusError as e:
+                print(f"🔥 HTTP error when calling ASI-One API: {e.response.status_code} {e.response.text}")
+            except Exception as e:
+                print(f"🔥 Unexpected error when calling ASI-One: {str(e)}")
 
 # helper to chunk long pdfs
 def chunk_text(text, max_chars=2000):
@@ -101,7 +103,12 @@ async def handle_content(ctx: Context, sender: str, msg: ContentRequest):
 
         ctx.logger.info(f"Parsed Important Topics: {key_ideas}")
 
+        # send to backend agent
         await ctx.send(sender, ContentResponse(key_ideas=all_key_ideas, upload_id=msg.upload_id))
+
+        # send to quiz agent
+        await ctx.send(QUIZ_AGENT_ADDRESS, ContentResponse(key_ideas=all_key_ideas, upload_id=msg.upload_id))
+
 
     except Exception as e:
         ctx.logger.error(f"Failed to parse content via LLM: {str(e)}")

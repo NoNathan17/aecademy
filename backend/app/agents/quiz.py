@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 load_dotenv()
 ASI_ONE_API_KEY = os.getenv("ASI_ONE_API_KEY")
 
+quiz_store = {}
+
 # Define the shared models
 class ContentRequest(Model):
     content: str
@@ -20,8 +22,8 @@ class ContentResponse(Model):
 key_idea_handler = Agent(
     name="quiz_maker",
     seed="quiz_maker_secret",
-    port=8002,  # Make sure no conflict
-    endpoint=["http://localhost:8002/submit"]
+    port=8003, 
+    endpoint=["http://localhost:8003/submit"]
 )
 
 # Async function to call ASI-One LLM
@@ -57,17 +59,6 @@ async def call_asi_llm(prompt: str) -> str:
 async def startup(ctx: Context):
     ctx.logger.info(f"Quiz Maker Agent started at {key_idea_handler.address}")
 
-    # Send ContentRequest to content_parser
-    await ctx.send(
-        "http://localhost:8001/submit",  # Address of content_parser
-        ContentRequest(
-            content="Photosynthesis is the process by which green plants and some other organisms use sunlight to synthesize foods from carbon dioxide and water.",
-            grade_level="5th grade"
-        ),
-        metadata={"upload_id": "12345"}  # Optional, useful for tracking
-    )
-    ctx.logger.info("Sent content to content_parser agent.")
-
 # When a ContentResponse (key ideas) is received
 @key_idea_handler.on_message(model=ContentResponse)
 async def handle_response(ctx: Context, sender: str, msg: ContentResponse):
@@ -80,9 +71,18 @@ async def handle_response(ctx: Context, sender: str, msg: ContentResponse):
     new_prompt = (
         f"Based on the following key ideas:\n\n"
         f"{ideas_text}\n\n"
-        f"Create a multiple-choice quiz that test the understanding of these ideas. "
-        f"Each question should have 4 answer options, and indicate the correct answer."
-    )
+        f"Create a quiz that includes a variety of question types:\n"
+        f"- Single-answer multiple choice questions\n"
+        f"- Free response questions\n"
+        f"- Fill-in-the-blank questions\n"
+        f"- Multi-select questions (select all that apply)\n\n"
+        f"Clearly specify for each question:\n"
+        f"- Question text\n"
+        f"- Answer choices (if applicable)\n"
+        f"- Correct answer(s)\n"
+        f"- Question type (e.g., 'multiple_choice', 'free_response', 'fill_in_blank', 'multi_select')\n\n"
+        f"Format the quiz in a structured JSON format."
+        )
 
     # Call the LLM again to generate the quiz
     try:
