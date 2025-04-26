@@ -2,6 +2,7 @@
 
 import { DM_Sans } from 'next/font/google';
 import { useEffect, useState } from "react";
+import Link from 'next/link';
 import Image from 'next/image';
 
 const dmSans = DM_Sans({ subsets: ['latin'], weight: ['400', '700'] });
@@ -27,12 +28,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="flex min-h-screen">
       <aside className="w-64 bg-[#AAB2C1] border-r flex flex-col p-6">
         <div className="flex items-center gap-2 mb-8">
+          <Link href="/">
           <Image
             src="/aecademy (1).svg"
             alt="Logo"
             width={100}
             height={100}
           />
+          </Link>
           <Image
             src="/new.svg"
             alt="New Icon"

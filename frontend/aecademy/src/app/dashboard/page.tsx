@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import DashboardLayout from '@/components/DashboardLayout';
 import PdfViewer from '@/components/PdfViewer';
@@ -10,6 +10,7 @@ export default function DashboardPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState('University');
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const selectedFile = event.target.files?.[0];
@@ -26,6 +27,25 @@ export default function DashboardPage() {
     setSelectedLevel(level);
     setDropdownOpen(false);
   }
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+
+    if (dropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    // Cleanup
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dropdownOpen]);
 
   return (
     <DashboardLayout>
@@ -65,8 +85,8 @@ export default function DashboardPage() {
             <Image src="/send.svg" alt="Send" width={20} height={20} />
           </button>
 
-          {/* Dropdown (Three Dots) */}
-          <div className="relative ml-4">
+          {/* Dropdown */}
+          <div ref={dropdownRef} className="relative ml-4">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
               className="text-white text-2xl leading-none"
