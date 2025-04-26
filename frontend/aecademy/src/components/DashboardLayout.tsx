@@ -4,17 +4,19 @@ import { DM_Sans } from 'next/font/google';
 import { useEffect, useState } from "react";
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useUser } from "@clerk/nextjs";
 
 const dmSans = DM_Sans({ subsets: ['latin'], weight: ['400', '700'] });
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user, isLoaded } = useUser();  // ✅ Moved here inside the function
+  const router = useRouter();
+  const { user, isLoaded } = useUser();
   const [queries, setQueries] = useState<string[]>([]);
   console.log(user?.emailAddresses[0]?.emailAddress)
   useEffect(() => {
     async function fetchQueries() {
-      if (!isLoaded || !user) return; // Wait for user to be ready
+      if (!isLoaded || !user) return;
 
       try {
         const response = await fetch('http://localhost:9000/api/queries', {
@@ -50,13 +52,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               height={100}
             />
           </Link>
-          <Image
-            src="/new.svg"
-            alt="New Icon"
-            width={24}
-            height={24}
+          <button
+            onClick={() => window.location.reload()}
             className="ml-2"
-          />
+          >
+            <Image
+              src="/new.svg"
+              alt="New Icon"
+              width={24}
+              height={24}
+              className="ml-2"
+            />
+          </button>
         </div>
 
         <p className={`${dmSans.className} text-white text-sm font-bold mb-4`}>Queries</p>
