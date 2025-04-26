@@ -9,7 +9,7 @@ ASI_ONE_API_KEY = os.getenv("ASI_ONE_API_KEY")
 # what the agent receives
 class ContentRequest(Model):
     content: str
-    complexity: str
+    grade_level: str
 
 class ContentResponse(Model):
     key_ideas: list
@@ -35,7 +35,7 @@ async def call_asi_llm(prompt: str) -> str:
     payload = {
         "model": "asi1-mini",
         "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.7, # how random the llm is
+        "temperature": 0.5, # how random the llm is
         "stream": False, # generates everything at once (better for us)
         "max_tokens": 500
     }
@@ -63,16 +63,13 @@ def chunk_text(text, max_chars=2000):
     chunks.append(text)
     return chunks
 
-# helper for picking prompt for complexity level
-def generate_prompt(content: str, complexity: str):
-    if complexity == "Baby":
-        prompt = f"From the following text, give me the most important topics to focus on, each followed by a baby-level simple explanation.\n\n{content}"
-    elif complexity == "Advanced":
-        prompt = f"From the following text, give me the most important topics to focus on, each followed by an in-depth technical explanation.\n\n{content}"
-    # default to intermediate
-    else:
-        prompt = f"From the following text, give me the most important topics to focus on, each followed by a clear explanation.\n\n{content}"
-
+# helper for picking prompt for grade level
+def generate_prompt(content: str, grade_level: str):
+    prompt = (
+        f"From the following text, extract the most important topics to focus on, "
+        f"and for each topic, provide an explanation as if explaining to a student at a {grade_level} level.\n\n"
+        f"{content}"
+    )
     return prompt
 
 # log on startup
@@ -84,14 +81,14 @@ async def startup(ctx: Context):
 @content_parser.on_message(model=ContentRequest, replies=ContentResponse)
 async def handle_content(ctx: Context, sender: str, msg: ContentRequest):
     ctx.logger.info(f"Received content to parse from {sender}")
-    ctx.logger.info(f"Complexity requested: {msg.complexity}")
+    ctx.logger.info(f"Grade Level requested: {msg.grade_level}")
 
     chunks = chunk_text(msg.content)
     all_key_ideas = []
 
     try:
         for chunk in chunks:
-            prompt = generate_prompt(chunk, msg.complexity)
+            prompt = generate_prompt(chunk, msg.grade_level)
             llm_output = await call_asi_llm(prompt)
             key_ideas = [idea.strip() for idea in llm_output.split("\n") if idea.strip()]
             all_key_ideas.extend(key_ideas)

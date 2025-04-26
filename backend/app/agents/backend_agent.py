@@ -11,7 +11,7 @@ backend_agent = Agent(
 
 class ContentRequest(Model):
     content: str
-    complexity: str
+    grade_level: str
 
 class ContentResponse(Model):
     key_ideas: list
@@ -31,9 +31,9 @@ async def process_queue(ctx: Context):
         if task["type"] == "send_content":
             to_address = task["to"]
             content = task["content"]
-            complexity = task.get("complexity", "intermediate")
+            grade_level = task.get("grade_level")
 
-            await ctx.send(to_address, ContentRequest(content=content, complexity=complexity))
+            await ctx.send(to_address, ContentRequest(content=content, grade_level=grade_level))
             ctx.logger.info(f"Sent ContentRequest to {to_address}")
 
 @backend_agent.on_message(model=ContentResponse)
