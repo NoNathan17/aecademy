@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import DashboardLayout from '@/components/DashboardLayout';
+import ReactMarkdown from 'react-markdown';
+import PdfViewer from '@/components/PdfViewer';
 
 export default function DashboardPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -178,15 +180,19 @@ export default function DashboardPage() {
 
       {loading && <p className="mt-8 text-xl animate-pulse">Processing your file... ⏳</p>}
 
-        {!loading && keyIdeas.length > 0 && (
-          <div className="mt-8 w-full max-w-2xl">
-            <h2 className="text-3xl font-bold mb-4">Key Concepts to Focus On ✨</h2>
-            <ul className="list-disc list-inside text-left text-lg space-y-2">
-              {keyIdeas.map((idea, idx) => (
-                <li key={idx}>{idea}</li>
-              ))}
-            </ul>
+      {!loading && keyIdeas.length > 0 && (
+        <div className="mt-8 w-full max-w-2xl">
+          <h2 className="text-3xl font-bold mb-4">Key Concepts to Focus On ✨</h2>
+          <div className="prose prose-lg max-w-none">
+            {keyIdeas.map((idea, idx) => (
+              <div key={idx} className="mb-8">
+              <ReactMarkdown>
+                {idea}
+              </ReactMarkdown>
+            </div>
+            ))}
           </div>
+        </div>
         )}
       </div>
     </DashboardLayout>
