@@ -22,7 +22,7 @@ export default function DashboardPage() {
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col items-center justify-center max-h-screen text-center pt-20">
+      <div className="flex flex-col items-center justify-center min-h-screen text-center">
         <div className="mb-8">
         <Image
         src="/book.svg"

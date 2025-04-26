@@ -6,11 +6,10 @@ import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@cl
 
 export default function Home() {
   return (
-    <div className="bg-[#2F334E] w-screen h-screen bg-no-repeat bg-cover bg-center"
+    <div className="bg-[#2F334E] min-h-screen w-screen flex flex-col bg-no-repeat bg-cover bg-center"
     style={{ backgroundImage: "url('/Group 5.svg')"}}>
 
-      <main className="w-screen h-screen">      
-      <header className="flex items-center pt-12 px-10">
+      <header className="flex items-center justify-between px-10 pt-8">
         <div className="flex-grow flex justify-start pl-10">
           <Image
             src="/aecademy.svg"
@@ -49,8 +48,7 @@ export default function Home() {
         </div>
       </header>
 
-      <div>
-        <div className="text-center flex flex-col mt-48">
+      <div className="flex-grow flex flex-col items-center justify-center text-center px-4">
           <p className={`${dmSans.className} font-bold text-7xl m-5`}>aecademy</p>
           <p className={`${dmSans.className}  text-3xl`}>Taking your education to the next level.</p>
           <Link href="/dashboard">
@@ -60,19 +58,16 @@ export default function Home() {
               Start Here
             </button>
           </Link>
-        </div>
       </div>
-        <footer>
+      <footer className="w-full flex justify-center pb-6">
           <Image
           src="/Group 7.svg"
           alt="Slide preview"
           width={1200}
           height={1200}
-          className="fixed bottom-0 left-1/2 -translate-x-1/2"
           />
           
         </footer>
-      </main>
     </div>
   );
 }

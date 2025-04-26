@@ -58,7 +58,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="w-[889px] h-[889px] bg-white opacity-20 rounded-full blur-[400px]"></div>
         </div>
 
-        <div className="relative z-10 p-8">
+        <div className="relative z-10">
           {children}
         </div>
       </main>
