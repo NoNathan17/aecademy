@@ -1,5 +1,6 @@
 import { DM_Sans } from 'next/font/google';
 import Image from 'next/image';
+import Link from 'next/link';
 const dmSans = DM_Sans({ subsets: ['latin'], weight: ['400', '700'] });
 import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
@@ -9,7 +10,7 @@ export default function Home() {
     style={{ backgroundImage: "url('/Group 5.svg')"}}>
 
       <main className="w-screen h-screen">      
-      <header className="flex items-center pt-0 px-10">
+      <header className="flex items-center pt-12 px-10">
         <div className="flex-grow flex justify-start pl-10">
           <Image
             src="/aecademy.svg"
@@ -49,15 +50,16 @@ export default function Home() {
 
 
 
-        <div className=" text-center flex flex-col" style={{ paddingTop: '25vh' }}>
+        <div className=" text-center flex flex-col" style={{ paddingTop: '20vh' }}>
           <p className={`${dmSans.className} font-bold text-5xl m-5`}>aecademy</p>
           <p className={`${dmSans.className}  text-2xl`}>Taking your education to the next level.</p>
-          <button
-            className={`${dmSans.className} mt-5 text-1xl rounded-lg bg-white text-[#2F334E] py-1 px-6 self-center transition-all duration-300 hover:bg-gray-300 hover:scale-110`}
-          >
-            Start Here
-          </button>
-
+          <Link href="/dashboard">
+            <button
+              className={`${dmSans.className} mt-5 text-1xl rounded-lg bg-white text-[#2F334E] py-1 px-6 self-center transition-all duration-300 hover:bg-gray-300 hover:scale-110`}
+            >
+              Start Here
+            </button>
+          </Link>
 
         </div>
         <footer >
