@@ -25,19 +25,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex min-h-screen">
-      <aside className="w-64 bg-[#AAB2C1] border-r p-4 flex flex-col">
-        <Image
-          src="/aecademy (1).svg"
-          alt="Logo"
-          width={128}
-          height={128}
-          className="m-auto"
-        />
-        <nav className="flex flex-col gap-2 flex-grow">
-          <p className={`${dmSans.className} text-2xl`}>Queries</p>
+      <aside className="w-64 bg-[#AAB2C1] border-r flex flex-col p-6">
+        <div className="flex items-center gap-2 mb-8">
+          <Image
+            src="/aecademy (1).svg"
+            alt="Logo"
+            width={100}
+            height={100}
+          />
+          <Image
+            src="/new.svg"
+            alt="New Icon"
+            width={24}
+            height={24}
+            className="ml-2"
+          />
+        </div>
+
+        <p className={`${dmSans.className} text-white text-sm font-bold mb-4`}>Queries</p>
+
+        <nav className="flex flex-col gap-4">
           {queries.map((query, index) => (
-            <div key={index} className="text-gray-700 hover:text-black cursor-default">
-              {query}
+            <div key={index} className="flex items-center gap-2 text-white text-sm hover:text-black cursor-pointer">
+              <span className="truncate">{query}</span>
             </div>
           ))}
         </nav>
