@@ -10,6 +10,7 @@ ASI_ONE_API_KEY = os.getenv("ASI_ONE_API_KEY")
 class ContentRequest(Model):
     content: str
     grade_level: str
+    upload_id: str
 
 class ContentResponse(Model):
     key_ideas: list
@@ -42,14 +43,17 @@ async def call_asi_llm(prompt: str) -> str:
     }
 
     async with httpx.AsyncClient() as client:
-        response = await client.post(url, headers=headers, json=payload)
-        response.raise_for_status()
-        data = response.json()
-
-    try:
-        return data["choices"][0]["message"]["content"]
-    except (KeyError, IndexError):
-        return "Failed to parse LLM output."
+        try:
+            response = await client.post(url, headers=headers, json=payload)
+            response.raise_for_status()
+            data = response.json()
+            return data["choices"][0]["message"]["content"]
+        except httpx.HTTPStatusError as e:
+            print(f"🔥 HTTP error when calling ASI-One API: {e.response.status_code} {e.response.text}")
+            return "Failed to call LLM"
+        except Exception as e:
+            print(f"🔥 Unexpected error when calling ASI-One: {str(e)}")
+            return "Failed to call LLM"
 
 # helper to chunk long pdfs
 def chunk_text(text, max_chars=2000):
@@ -83,8 +87,7 @@ async def startup(ctx: Context):
 async def handle_content(ctx: Context, sender: str, msg: ContentRequest):
     ctx.logger.info(f"Received content to parse from {sender}")
     ctx.logger.info(f"Grade Level requested: {msg.grade_level}")
-
-    upload_id = ctx.metadata.get('upload_id') if ctx.metadata else None
+    ctx.logger.info(f"Upload ID: {msg.upload_id}")
 
     chunks = chunk_text(msg.content)
     all_key_ideas = []
@@ -98,12 +101,7 @@ async def handle_content(ctx: Context, sender: str, msg: ContentRequest):
 
         ctx.logger.info(f"Parsed Important Topics: {key_ideas}")
 
-        if upload_id:
-            await ctx.send(sender, ContentResponse(key_ideas=all_key_ideas, upload_id=upload_id))
-        else:
-            ctx.logger.error("No upload_id found in metadata. Cannot send upload_id back.")
-
-        await ctx.send(sender, ContentResponse(key_ideas=key_ideas))
+        await ctx.send(sender, ContentResponse(key_ideas=all_key_ideas, upload_id=msg.upload_id))
 
     except Exception as e:
         ctx.logger.error(f"Failed to parse content via LLM: {str(e)}")
