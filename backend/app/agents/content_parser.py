@@ -77,16 +77,14 @@ async def handle_content(ctx: Context, sender: str, msg: ContentRequest):
 
     try:
         for chunk in chunks:
-            prompt = f"Summarize the following PDF content into 5 key ideas:\n\n{chunk}"
+            prompt = f"From the following text, give me the 5 most important topics to focus on, each starting with a number 1. to 5., followed by a brief explanation:\n\n{chunk}"
             llm_output = await call_asi_llm(prompt)
             key_ideas = [idea.strip() for idea in llm_output.split("\n") if idea.strip()]
             all_key_ideas.extend(key_ideas)
 
-        top_5_ideas = all_key_ideas[:5]
+        ctx.logger.info(f"Parsed Key Ideas: {key_ideas}")
 
-        ctx.logger.info(f"Parsed Key Ideas: {top_5_ideas}")
-
-        await ctx.send(sender, ContentResponse(key_ideas=top_5_ideas))
+        await ctx.send(sender, ContentResponse(key_ideas=key_ideas))
 
     except Exception as e:
         ctx.logger.error(f"Failed to parse content via LLM: {str(e)}")
