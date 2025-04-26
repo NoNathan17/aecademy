@@ -9,9 +9,10 @@ import { useUser } from "@clerk/nextjs";
 const dmSans = DM_Sans({ subsets: ['latin'], weight: ['400', '700'] });
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user, isLoaded } = useUser();  // ✅ Moved here inside the function
+  const { user, isLoaded } = useUser();
   const [queries, setQueries] = useState<string[]>([]);
-  console.log(user?.emailAddresses[0]?.emailAddress)
+  const [fetchedData, setFetchedData] = useState<any>(null); // <-- New state to store fetched query data
+
   useEffect(() => {
     async function fetchQueries() {
       if (!isLoaded || !user) return; // Wait for user to be ready
@@ -28,7 +29,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         });
 
         const data = await response.json();
-        console.log(data);
+        console.log('Fetched queries:', data);
         setQueries(data);
       } catch (error) {
         console.error('Failed to fetch queries:', error);
@@ -62,10 +63,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <p className={`${dmSans.className} text-white text-sm font-bold mb-4`}>Queries</p>
 
         <nav className="flex flex-col gap-4">
-          {queries.map((question, index) => (
+          {queries?.map((question, index) => (
             <div
               key={index}
               className="flex items-center gap-2 text-white text-sm hover:text-black cursor-pointer"
+              onClick={async () => {
+                try {
+                  const response = await fetch(`http://localhost:9000/api/query/${question}`, {
+                    method: 'GET',
+                  });
+                  const data = await response.json();
+                  console.log('Fetched instance:', data);
+                  setFetchedData(data);  // <-- Save the fetched data here
+                } catch (error) {
+                  console.error('Error fetching instance:', error);
+                }
+              }}
             >
               <span className="truncate">{question}</span>
             </div>
@@ -78,8 +91,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="w-[889px] h-[889px] bg-white opacity-20 rounded-full blur-[400px]"></div>
         </div>
 
-        <div className="relative z-10">
-          {children}
+        <div className="relative z-10 p-8">
+          {/* If fetchedData exists, show it. Otherwise, show children */}
+          {fetchedData ? (
+            <div className="text-white">
+              <h2 className="text-2xl font-bold mb-4">{fetchedData.question}</h2>
+              <p className="mb-2">{fetchedData.summary}</p>
+              <p className="mb-2">{fetchedData.quiz}</p>
+            </div>
+          ) : (
+            children
+          )}
         </div>
       </main>
     </div>
