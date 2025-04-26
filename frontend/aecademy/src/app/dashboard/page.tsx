@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import DashboardLayout from '@/components/DashboardLayout';
-import PdfViewer from '@/components/PdfViewer';
 
 export default function DashboardPage() {
   const [file, setFile] = useState<File | null>(null);
