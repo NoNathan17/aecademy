@@ -47,8 +47,7 @@ async def process_queue(ctx: Context):
 async def handle_content_response(ctx: Context, sender: str, response: ContentResponse):
     ctx.logger.info(f"Received parsed key ideas from ContentParserAgent: {response.key_ideas}")
 
-    # Extract upload_id from sender context or assume it's passed
-    upload_id = ctx.metadata.get("upload_id") if ctx.metadata else None
+    upload_id = response.upload_id
 
     if upload_id:
         key_ideas_store[upload_id] = response.key_ideas

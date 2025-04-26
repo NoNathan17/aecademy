@@ -70,6 +70,8 @@ export default function DashboardPage() {
   return (
     <DashboardLayout>
       <div className="flex flex-col items-center justify-center min-h-screen text-center">
+      {keyIdeas.length === 0 && (
+          <>
         <div className="mb-8">
           <Image
             src="/book.svg"
@@ -132,7 +134,7 @@ export default function DashboardPage() {
               }
             }}
             disabled={!file}
-            className={`ml-4 p-2 rounded-full ${file ? "bg-[#2F334E]" : "bg-gray-300"} transition-all`}
+            className={`ml-4 p-2 rounded-full ${file ? "bg-[#2F334E]" : "bg-gray-300"} transition-all hover:cursor-pointer`}
           >
             <Image src="/send.svg" alt="Send" width={20} height={20} />
           </button>
@@ -172,12 +174,14 @@ export default function DashboardPage() {
           onChange={handleFileChange}
           className="hidden"
         />
+      </>
+      )}
 
-        {loading && <p className="mt-8 text-xl">Loading...</p>}
+      {loading && <p className="mt-8 text-xl animate-pulse">Processing your file... ⏳</p>}
 
         {!loading && keyIdeas.length > 0 && (
           <div className="mt-8 w-full max-w-2xl">
-            <h2 className="text-3xl font-bold mb-4">Key Ideas ✨</h2>
+            <h2 className="text-3xl font-bold mb-4">Key Concepts to Focus On ✨</h2>
             <ul className="list-disc list-inside text-left text-lg space-y-2">
               {keyIdeas.map((idea, idx) => (
                 <li key={idx}>{idea}</li>
