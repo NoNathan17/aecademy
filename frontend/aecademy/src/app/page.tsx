@@ -66,7 +66,7 @@ export default function Home() {
           alt="Slide preview"
           width={1028}
           height={1028}
-          className="fixed bottom-0 left-1/2 -translate-x-1/2"
+          className="bottom-0 left-1/2 -translate-x-1/2"
           />
           
         </div>
