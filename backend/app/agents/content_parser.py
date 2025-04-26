@@ -49,6 +49,18 @@ async def call_asi_llm(prompt: str) -> str:
     except (KeyError, IndexError):
         return "Failed to parse LLM output."
 
+# helper to chunk long pdfs
+def chunk_text(text, max_chars=2000):
+    # Split the text into chunks no larger than max_chars
+    chunks = []
+    while len(text) > max_chars:
+        split_idx = text[:max_chars].rfind('. ') + 1  # Find last sentence end
+        if split_idx == 0:
+            split_idx = max_chars  # Just hard cut if no sentence found
+        chunks.append(text[:split_idx])
+        text = text[split_idx:]
+    chunks.append(text)
+    return chunks
 
 # log on startup
 @content_parser.on_event("startup")
@@ -59,22 +71,22 @@ async def startup(ctx: Context):
 @content_parser.on_message(model=ContentRequest, replies=ContentResponse)
 async def handle_content(ctx: Context, sender: str, msg: ContentRequest):
     ctx.logger.info(f"Received content to parse from {sender}")
-    ctx.logger.info(f"Received content: {msg.content}")
 
-    prompt = f"Summarize the following PDF content into 5 key ideas:\n\n{msg.content}"
-
+    chunks = chunk_text(msg.content)
+    all_key_ideas = []
 
     try:
-        # Call the Fetch LLM
-        llm_output = await call_asi_llm(prompt)
-        
-        # Process the output into key ideas
-        key_ideas = [idea.strip() for idea in llm_output.split("\n") if idea.strip()][:5]
-        
-        ctx.logger.info(f"Parsed Key Ideas: {key_ideas}")
+        for chunk in chunks:
+            prompt = f"Summarize the following PDF content into 5 key ideas:\n\n{chunk}"
+            llm_output = await call_asi_llm(prompt)
+            key_ideas = [idea.strip() for idea in llm_output.split("\n") if idea.strip()]
+            all_key_ideas.extend(key_ideas)
 
-        # Send back to the original sender
-        await ctx.send(sender, ContentResponse(key_ideas=key_ideas))
+        top_5_ideas = all_key_ideas[:5]
+
+        ctx.logger.info(f"Parsed Key Ideas: {top_5_ideas}")
+
+        await ctx.send(sender, ContentResponse(key_ideas=top_5_ideas))
 
     except Exception as e:
         ctx.logger.error(f"Failed to parse content via LLM: {str(e)}")
