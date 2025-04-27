@@ -42,7 +42,7 @@ async def call_asi_llm(prompt: str) -> str:
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.5, # how random the llm is
         "stream": False, # generates everything at once (better for us)
-        "max_tokens": 500
+        "max_tokens": 600
     }
 
     async with httpx.AsyncClient() as client:
@@ -58,7 +58,7 @@ async def call_asi_llm(prompt: str) -> str:
                 print(f"🔥 Unexpected error when calling ASI-One: {str(e)}")
 
 # helper to chunk long pdfs
-def chunk_text(text, max_chars=2000):
+def chunk_text(text, max_chars=500):
     # Split the text into chunks no larger than max_chars
     chunks = []
     while len(text) > max_chars:
@@ -72,12 +72,12 @@ def chunk_text(text, max_chars=2000):
 
 # helper for picking prompt for grade level
 def generate_prompt(content: str, grade_level: str):
-    prompt = (
-        f"From the following text, extract the most important topics to focus on, "
-        f"and for each topic, provide an explanation as if explaining to a student at a {grade_level} level.\n\n"
-        f"{content}"
+    return (
+        f"Summarize the following text into clear numbered points. "
+        f"Explain each idea for a {grade_level} student in 2-3 sentences:\n\n"
+        f"{content}\n\n"
+        f"Only return the numbered key ideas. No intro or outro."
     )
-    return prompt
 
 # log on startup
 @content_parser.on_event("startup")
@@ -91,6 +91,10 @@ async def handle_content(ctx: Context, sender: str, msg: ContentRequest):
     ctx.logger.info(f"Grade Level requested: {msg.grade_level}")
     ctx.logger.info(f"Upload ID: {msg.upload_id}")
 
+    if not msg.content.strip() or len(msg.content.strip()) < 50:
+        ctx.logger.error("⚠️ Uploaded content is too small or empty. Skipping.")
+        return
+
     chunks = chunk_text(msg.content)
     all_key_ideas = []
 
@@ -98,6 +102,10 @@ async def handle_content(ctx: Context, sender: str, msg: ContentRequest):
         for chunk in chunks:
             prompt = generate_prompt(chunk, msg.grade_level)
             llm_output = await call_asi_llm(prompt)
+
+            if not llm_output:
+                raise Exception("No valid output from LLM")
+            
             key_ideas = [idea.strip() for idea in llm_output.split("\n") if idea.strip()]
             all_key_ideas.extend(key_ideas)
 
@@ -108,7 +116,6 @@ async def handle_content(ctx: Context, sender: str, msg: ContentRequest):
 
         # send to quiz agent
         await ctx.send(QUIZ_AGENT_ADDRESS, ContentResponse(key_ideas=all_key_ideas, upload_id=msg.upload_id))
-
 
     except Exception as e:
         ctx.logger.error(f"Failed to parse content via LLM: {str(e)}")

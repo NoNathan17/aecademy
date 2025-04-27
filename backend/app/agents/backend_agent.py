@@ -1,6 +1,7 @@
 from uagents import Agent, Context, Model
 from app.agents.backend_agent_queue import backend_agent_task_queue
-from app.routes.api import key_ideas_store
+from app.storage import key_ideas_store
+from app.storage import quiz_store
 import asyncio
 
 backend_agent = Agent(
@@ -17,6 +18,10 @@ class ContentRequest(Model):
 
 class ContentResponse(Model):
     key_ideas: list
+    upload_id: str
+
+class QuizResponse(Model):
+    quiz: str
     upload_id: str
 
 # When backend agent starts
@@ -53,7 +58,19 @@ async def handle_content_response(ctx: Context, sender: str, response: ContentRe
         key_ideas_store[upload_id] = response.key_ideas
         ctx.logger.info(f"Saved key ideas for upload_id {upload_id}")
     else:
-        ctx.logger.error("No upload_id found in context metadata! Cannot save key ideas.")
+        ctx.logger.error("No upload_id found! Cannot save key ideas.")
+
+@backend_agent.on_message(model=QuizResponse)
+async def handle_quiz_response(ctx: Context, sender: str, response: QuizResponse):
+    ctx.logger.info(f"Received quiz from QuizMakerAgent")
+
+    upload_id = response.upload_id
+
+    if upload_id:
+        quiz_store[upload_id] = response.quiz
+        ctx.logger.info(f"Saved quiz for upload_id {upload_id}")
+    else:
+        ctx.logger.error("No upload_id found, cannot save quiz")
 
 if __name__ == "__main__":
     backend_agent.run()
