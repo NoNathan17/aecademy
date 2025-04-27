@@ -85,7 +85,7 @@ async def receive_data(request: Request):
     print("Email:", data.get('email'))
     print("Ideas:", data.get('ideas'))
     print("Quiz:", data.get('quiz'))
-
+    add_query(data.get('email'),data.get('filename'),data.get('ideas'),data.get('quiz'))
     return {"message": "Data received successfully!"}
 
 if __name__ == "__main__":
