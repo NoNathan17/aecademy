@@ -57,14 +57,15 @@ def get_queries_by_user_id(user_id: str):
         print(f"Failed to retrieve documents: {str(e)}")
         return []
 
-def add_query(user_id: str, question: str, answer: str, timestamp: str):
+def add_query(user_id: str, question: str, answer: str, timestamp: str, key_ideas: list):
     try:
 
         query_document = {
             "userId": user_id,
             "question": question,
             "summary": answer,
-            "quiz": timestamp
+            "quiz": timestamp,
+            "keyIdeas": key_ideas 
         }
 
         result = queries_collection.insert_one(query_document)
@@ -85,7 +86,7 @@ async def receive_data(request: Request):
     print("Email:", data.get('email'))
     print("Ideas:", data.get('ideas'))
     print("Quiz:", data.get('quiz'))
-    add_query(data.get('email'),data.get('filename'),data.get('ideas'),data.get('quiz'))
+    add_query(data.get('email'),data.get('filename'),data.get('ideas'),data.get('quiz'),data.get('keyIdeas'))
     return {"message": "Data received successfully!"}
 
 if __name__ == "__main__":
