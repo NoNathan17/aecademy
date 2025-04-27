@@ -43,14 +43,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex min-h-screen">
-      <aside className="w-64 bg-[#AAB2C1] border-r flex flex-col p-6">
-        <div className="flex items-center gap-2 mb-8">
+      <aside className="w-64 bg-gradient-to-br from-gray-500 to bg-gray-400 flex flex-col p-6">
+        <div className="flex justify-between items-center gap-2 mb-8">
           <Link href="/">
             <Image
               src="/aecademy (1).svg"
               alt="Logo"
-              width={100}
-              height={100}
+              width={135}
+              height={135}
+              className="hover:cursor-pointer"
             />
           </Link>
           <button
@@ -60,14 +61,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Image
               src="/new.svg"
               alt="New Icon"
-              width={24}
-              height={24}
-              className="ml-2"
+              width={28}
+              height={28}
+              className="hover:cursor-pointer"
             />
           </button>
         </div>
 
-        <p className={`${dmSans.className} text-white text-sm font-bold mb-4`}>Queries</p>
+        <p className={`${dmSans.className} text-white text-2xl text-center font-bold mb-4`}>Queries</p>
 
         <nav className="flex flex-col gap-4">
           {queries?.map((question, index) => (

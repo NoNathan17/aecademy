@@ -151,7 +151,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Upload Bar */}
-        <div className="flex items-center bg-gray-400/50 mt-8 px-4 py-2 rounded-full w-full max-w-2xl hover:bg-gray-400/60 transition">
+        <div className="flex items-center bg-gray-400/50 mt-4 px-4 py-2 rounded-full w-full max-w-2xl hover:bg-gray-400/60 transition-transform duration-300">
           {/* Left: Paperclip */}
           <div className="flex items-center flex-grow cursor-pointer" onClick={handleUploadClick}>
             <Image src="/paperclip.svg" alt="Upload" width={20} height={20} className="mr-3" />
@@ -226,7 +226,7 @@ export default function DashboardPage() {
 
       {loading && <p className="mt-8 text-xl animate-pulse">Processing your file... ⏳</p>}
 
-      {!loading && keyIdeas.length > 0 && (
+      {keyIdeas.length > 0 && (
         <div className="mt-16 max-w-4xl">
           <h2 className="text-4xl font-bold mb-6 text-center">Key Concepts to Focus On ✨</h2>
           <div className="prose prose-lg max-w-none">
@@ -244,8 +244,8 @@ export default function DashboardPage() {
 
       {!loading && quiz.length > 0 && (
         <div className="mt-8 w-full max-w-4xl text-left bg-gray-100 p-6 rounded-lg">
-          <h2 className="text-2xl font-bold mb-4">Raw Quiz Data 📋</h2>
-          <pre className="whitespace-pre-wrap text-sm">
+          <h2 className="text-2xl font-bold mb-4 text-amber-400">Raw Quiz Data </h2>
+          <pre className="whitespace-pre-wrap text-sm text-pink-400">
             {quiz}
           </pre>
         </div>
