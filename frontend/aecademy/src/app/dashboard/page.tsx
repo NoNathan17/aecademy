@@ -299,10 +299,10 @@ export default function DashboardPage() {
           <ReactMarkdown
             components={{
               h3: ({ node, ...props }) => (
-                <h3 className="text-3xl font-bold mt-10 mb-4 text-left" {...props} />
+                <h3 className="text-3xl font-bold mt-10 mb-2 text-left" {...props} />
               ),
               h4: ({ node, ...props }) => (
-                <h4 className="text-2xl font-semibold mt-6 mb-2 text-left" {...props} />
+                <h4 className="text-2xl font-semibold mb-2 text-left" {...props} />
               ),
               p: ({ node, ...props }) => (
                 <p className="text-base mb-4 text-left" {...props} />

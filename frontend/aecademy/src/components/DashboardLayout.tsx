@@ -110,10 +110,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {/* Key Ideas */}
             {fetchedData.keyIdeas && fetchedData.keyIdeas.length > 0 && (
               <div className="mb-12">
-                <h3 className="text-4xl font-bold text-left">Key Concepts ✨</h3>
+                <h3 className="text-4xl font-bold text-left mb-10">Key Concepts ✨</h3>
                 <ul className="list-disc list-inside space-y-3 text-base text-left">
                   {fetchedData.keyIdeas.map((idea: string, idx: number) => (
-                    <ReactMarkdown
+                  <ReactMarkdown
                     components={{
                       h3: ({ node, ...props }) => (
                         <h3 className="text-3xl font-bold mt-10 mb-4 text-left" {...props} />
@@ -122,7 +122,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         <h4 className="text-2xl font-semibold mt-6 mb-2 text-left" {...props} />
                       ),
                       p: ({ node, ...props }) => (
-                        <p className="text-base mb-4 text-left" {...props} />
+                        <p className="text-base mt-4 mb-4 text-left" {...props} />
                       ),
                       li: ({ node, ...props }) => (
                         <li className="mb-2" {...props} />
