@@ -152,18 +152,17 @@ export default function DashboardPage() {
     if (keyIdeasReady && quizReady) {
       console.log("✅ Both ready, stopping loading...");
       setLoading(false); 
-
+  
       if (file && user) {
         sendDataToBackend(
           file.name,
           user.emailAddresses[0]?.emailAddress ?? '',
-          keyIdeas,
+          keyIdeas.join("\n"),  // <-- JOIN array into a string here
           quiz
         );
       }
     }
   }, [keyIdeasReady, quizReady]);
-
   return (
     <DashboardLayout>
       <div className="flex flex-col items-center justify-center min-h-screen text-center">
