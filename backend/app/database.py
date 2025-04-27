@@ -22,9 +22,10 @@ queries_collection = db["queries"]
 #get names of previous que
 @app.post("/api/queries")
 async def get_queries(request: Request):
+    global id
     body = await request.json()
     user_email = body.get("email")
-
+    id=user_email
     if not user_email:
         return JSONResponse(content={"error": "No email provided"}, status_code=400)
 
@@ -37,7 +38,7 @@ async def get_queries(request: Request):
 #code for getting info from clicking on previous queries
 @app.get("/api/query/{query_name}")
 async def get_query(query_name: str):
-    query = queries_collection.find_one({"question": query_name})
+    query = queries_collection.find_one({"question": query_name, "userId": id})
 
     # Convert the _id to a string so it's JSON safe
     query["_id"] = str(query["_id"])
@@ -59,6 +60,14 @@ def get_queries_by_user_id(user_id: str):
 
 def add_query(user_id: str, question: str, answer: str, timestamp: str):
     try:
+        # First, check how many documents already exist with the same userId and question name
+        existing_count = queries_collection.count_documents({
+            "userId": user_id,
+            "question": {"$regex": f"^{question}( \\(\\d+\\))?$", "$options": "i"}
+        })
+
+        if existing_count > 0:
+            question = f"{question} ({existing_count})"
 
         query_document = {
             "userId": user_id,
@@ -74,6 +83,7 @@ def add_query(user_id: str, question: str, answer: str, timestamp: str):
     except Exception as e:
         print(f"Failed to insert document: {str(e)}")
         return None
+
 
 # POST endpoint to receive the data
 @app.post("/api/submit")
