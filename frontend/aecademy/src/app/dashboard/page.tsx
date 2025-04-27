@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import DashboardLayout from '@/components/DashboardLayout';
 import ReactMarkdown from 'react-markdown';
-import PdfViewer from '@/components/PdfViewer';
 
 export default function DashboardPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -13,7 +12,10 @@ export default function DashboardPage() {
   const [selectedLevel, setSelectedLevel] = useState('University');
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [keyIdeas, setKeyIdeas] = useState<string[]>([]);
+  const [quiz, setQuiz] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [keyIdeasReady, setKeyIdeasReady] = useState(false);
+  const [quizReady, setQuizReady] = useState(false);
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const selectedFile = event.target.files?.[0];
@@ -48,7 +50,7 @@ export default function DashboardPage() {
     const data = await response.json()
     return data.upload_id;
   }
-
+  
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -67,6 +69,61 @@ export default function DashboardPage() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [dropdownOpen]);
+
+  async function fetchKeyIdeas(uploadId: string) {
+    const intervalId = setInterval(async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/get-key-ideas/${uploadId}`);
+        console.log("Polling key ideas...", response.status);
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result.key_ideas) {
+            setKeyIdeas(result.key_ideas);
+            setKeyIdeasReady(true); 
+            clearInterval(intervalId);
+          }
+        } else if (response.status !== 202) {
+          console.error('Failed to get key ideas');
+          clearInterval(intervalId);
+        }
+      } catch (error) {
+        console.error('Error fetching key ideas:', error);
+        clearInterval(intervalId);
+      }
+    }, 3000);
+  }
+
+  async function fetchQuiz(uploadId: string) {
+    const intervalId = setInterval(async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/get-quiz/${uploadId}`);
+        console.log("Polling quiz...", response.status);
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result.quiz) {
+            setQuiz(result.quiz);
+            setQuizReady(true);
+            clearInterval(intervalId);
+          }
+        } else if (response.status !== 202) {
+          console.error('Failed to get quiz');
+          clearInterval(intervalId);
+        }
+      } catch (error) {
+        console.error('Error fetching quiz:', error);
+        clearInterval(intervalId);
+      }
+    }, 3000);
+  }
+
+  useEffect(() => {
+    if (keyIdeasReady && quizReady) {
+      console.log("✅ Both ready, stopping loading...");
+      setLoading(false); 
+    }
+  }, [keyIdeasReady, quizReady]);
 
   return (
     <DashboardLayout>
@@ -105,29 +162,14 @@ export default function DashboardPage() {
               if (!file) return;
               setLoading(true);
               setKeyIdeas([]);
+              setQuiz([]);
+              setKeyIdeasReady(false);
+              setQuizReady(false);
               try {
                 const uploadId = await handlePDF(file, selectedLevel);
+                fetchKeyIdeas(uploadId);
+                fetchQuiz(uploadId);
                 // Start polling every 3 seconds
-                const intervalId = setInterval(async () => {
-                  try {
-                    const res = await fetch(`http://localhost:8000/get-key-ideas/${uploadId}`);
-                    if (res.ok) {
-                      const result = await res.json();
-                      if (result.key_ideas) {
-                        setKeyIdeas(result.key_ideas);
-                        clearInterval(intervalId);
-                        setLoading(false);
-                      }
-                    } else if (res.status !== 202) {
-                      throw new Error('Failed to get key ideas');
-                    }
-                  } catch (error) {
-                    console.error(error);
-                    clearInterval(intervalId);
-                    setLoading(false);
-                  }
-                }, 3000);
-
               } catch (error) {
                 console.error(error);
                 alert('Something went wrong uploading the PDF.');
@@ -181,8 +223,8 @@ export default function DashboardPage() {
       {loading && <p className="mt-8 text-xl animate-pulse">Processing your file... ⏳</p>}
 
       {!loading && keyIdeas.length > 0 && (
-        <div className="mt-8 w-full max-w-2xl">
-          <h2 className="text-3xl font-bold mb-4">Key Concepts to Focus On ✨</h2>
+        <div className="mt-16 max-w-4xl">
+          <h2 className="text-4xl font-bold mb-6 text-center">Key Concepts to Focus On ✨</h2>
           <div className="prose prose-lg max-w-none">
             {keyIdeas.map((idea, idx) => (
               <div key={idx} className="mb-8">
@@ -195,6 +237,15 @@ export default function DashboardPage() {
         </div>
         )}
       </div>
+
+      {!loading && quiz.length > 0 && (
+        <div className="mt-8 w-full max-w-4xl text-left bg-gray-100 p-6 rounded-lg">
+          <h2 className="text-2xl font-bold mb-4">Raw Quiz Data 📋</h2>
+          <pre className="whitespace-pre-wrap text-sm">
+            {quiz}
+          </pre>
+        </div>
+      )}
     </DashboardLayout>
   );
 }
