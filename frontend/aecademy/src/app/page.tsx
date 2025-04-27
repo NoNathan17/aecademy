@@ -61,7 +61,7 @@ export default function Home() {
       </div>
       <footer className="w-full flex justify-center">
           <Image
-          src="/Group 7.svg"
+          src="/landing_image.png"
           alt="Slide preview"
           width={1200}
           height={1200}

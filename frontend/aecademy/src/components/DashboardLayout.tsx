@@ -74,7 +74,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {queries?.map((question, index) => (
             <div
               key={index}
-              className="flex items-center gap-2 text-white text-sm hover:text-black cursor-pointer"
+              className="flex items-center gap-2 text-white text-sm text-center hover:text-gray-200 cursor-pointer"
               onClick={async () => {
                 try {
                   const response = await fetch(`http://localhost:9000/api/query/${question}`, {
