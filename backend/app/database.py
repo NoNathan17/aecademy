@@ -77,4 +77,5 @@ def add_query(user_id: str, question: str, answer: str, timestamp: str):
 
 
 if __name__ == "__main__":
+    add_query("ningyl1@uci.edu", "lorem.pdf", "asdasdasdajdsadsasdasdajasdasdajsdisdpkofdbo[pkdrokweopgdjdhdnbndfhfddfgsdfdhuiasdfhusuaaaaaaaaaaaaaaaofsodfhaosidaiodhaoshdioasdaodasdhaosdhaosd", "aaaaaaaaaaaaaaaaaasdasdasdasdasdaksdasdjasdasdasdjadsjajsdjasdjajsdjasdddddddddddddddddddddddasdjasdjaksdjajsdndjcjvnajsdkajsdnansjdkajsdnjskajsaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     uvicorn.run("database:app", host="0.0.0.0", port=9000, reload=True)

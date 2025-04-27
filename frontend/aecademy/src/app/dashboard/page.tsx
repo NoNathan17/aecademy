@@ -4,8 +4,11 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import DashboardLayout from '@/components/DashboardLayout';
 import ReactMarkdown from 'react-markdown';
+import { useUser } from "@clerk/nextjs";
+
 
 export default function DashboardPage() {
+  const { user} = useUser();
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -75,6 +78,7 @@ export default function DashboardPage() {
       try {
         const response = await fetch(`http://localhost:8000/get-key-ideas/${uploadId}`);
         console.log("Polling key ideas...", response.status);
+        console.log(user?.emailAddresses[0]?.emailAddress);
 
         if (response.ok) {
           const result = await response.json();
