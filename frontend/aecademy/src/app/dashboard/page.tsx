@@ -13,7 +13,7 @@ export default function DashboardPage() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState('University');
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [keyIdeas, setKeyIdeas] = useState<string[]>([]);
+  const [keyIdeas, setKeyIdeas] = useState<any[]>([]);
   const [quiz, setQuiz] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [keyIdeasReady, setKeyIdeasReady] = useState(false);
@@ -54,7 +54,7 @@ export default function DashboardPage() {
   }
 
   // ADD THIS FUNCTION
-  async function sendDataToBackend(filename: string, email: string, keyIdeas: string[], quiz: any[]) {
+  async function sendDataToBackend(filename: string, email: string, keyIdeas: any[], quiz: any[]) {
     try {
       const response = await fetch('http://localhost:9000/api/submit', {
         method: 'POST',
@@ -152,17 +152,18 @@ export default function DashboardPage() {
     if (keyIdeasReady && quizReady) {
       console.log("✅ Both ready, stopping loading...");
       setLoading(false); 
-  
+
       if (file && user) {
         sendDataToBackend(
           file.name,
           user.emailAddresses[0]?.emailAddress ?? '',
-          keyIdeas.join("\n"),  // <-- JOIN array into a string here
+          keyIdeas,
           quiz
         );
       }
     }
   }, [keyIdeasReady, quizReady]);
+
   return (
     <DashboardLayout>
       <div className="flex flex-col items-center justify-center min-h-screen text-center">
@@ -266,24 +267,24 @@ export default function DashboardPage() {
           <div className="prose prose-lg text-left">
             {keyIdeas.map((idea, idx) => (
               <div key={idx}>
-            <ReactMarkdown
-              components={{
-                h3: ({ node, ...props }) => (
-                  <h3 className="text-3xl font-bold mt-10 mb-4 text-left" {...props} />
-                ),
-                h4: ({ node, ...props }) => (
-                  <h4 className="text-2xl font-semibold mt-6 mb-2 text-left" {...props} />
-                ),
-                p: ({ node, ...props }) => (
-                  <p className="text-base mb-4 text-left" {...props} />
-                ),
-                li: ({ node, ...props }) => (
-                  <li className="mb-2" {...props} />
-                ),
-              }}
-            >
-              {idea}
-            </ReactMarkdown>
+              <ReactMarkdown
+                components={{
+                  h3: ({ node, ...props }) => (
+                    <h3 className="text-3xl font-bold mt-10 mb-4 text-left" {...props} />
+                  ),
+                  h4: ({ node, ...props }) => (
+                    <h4 className="text-2xl font-semibold mt-6 mb-2 text-left" {...props} />
+                  ),
+                  p: ({ node, ...props }) => (
+                    <p className="text-base mb-4 text-left" {...props} />
+                  ),
+                  li: ({ node, ...props }) => (
+                    <li className="mb-2" {...props} />
+                  ),
+                }}
+              >
+                {idea}
+              </ReactMarkdown>
             </div>
             ))}
           </div>

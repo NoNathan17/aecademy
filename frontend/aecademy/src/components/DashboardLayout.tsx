@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useUser } from "@clerk/nextjs";
+import ReactMarkdown from "react-markdown";
 
 const dmSans = DM_Sans({ subsets: ['latin'], weight: ['400', '700'] });
 
@@ -100,17 +101,66 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
 
         <div className="relative z-10 p-8">
-          {/* If fetchedData exists, show it. Otherwise, show children */}
-          {fetchedData ? (
-            <div className="text-white">
-              <h2 className="text-2xl font-bold mb-4">{fetchedData.question}</h2>
-              <p className="mb-2">{fetchedData.summary}</p>
-              <p className="mb-2">{fetchedData.quiz}</p>
+        {/* If fetchedData exists, show it. Otherwise, show children */}
+        {fetchedData ? (
+          <div className="text-white">
+            {/* Title */}
+            <h2 className="text-3xl font-bold mb-12">{fetchedData.question}</h2>
+
+            {/* Key Ideas */}
+            {fetchedData.keyIdeas && fetchedData.keyIdeas.length > 0 && (
+              <div className="mb-12">
+                <h3 className="text-4xl font-bold text-left">Key Concepts ✨</h3>
+                <ul className="list-disc list-inside space-y-3 text-base text-left">
+                  {fetchedData.keyIdeas.map((idea: string, idx: number) => (
+                    <ReactMarkdown
+                    components={{
+                      h3: ({ node, ...props }) => (
+                        <h3 className="text-3xl font-bold mt-10 mb-4 text-left" {...props} />
+                      ),
+                      h4: ({ node, ...props }) => (
+                        <h4 className="text-2xl font-semibold mt-6 mb-2 text-left" {...props} />
+                      ),
+                      p: ({ node, ...props }) => (
+                        <p className="text-base mb-4 text-left" {...props} />
+                      ),
+                      li: ({ node, ...props }) => (
+                        <li className="mb-2" {...props} />
+                      ),
+                    }}
+                  >
+                    {idea}
+                  </ReactMarkdown>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="prose prose-invert max-w-none">
+              <ReactMarkdown
+              components={{
+                h3: ({ node, ...props }) => (
+                  <h3 className="text-3xl font-bold mt-10 mb-4 text-left" {...props} />
+                ),
+                h4: ({ node, ...props }) => (
+                  <h4 className="text-2xl font-semibold mt-6 mb-2 text-left" {...props} />
+                ),
+                p: ({ node, ...props }) => (
+                  <p className="text-base mb-4 text-left" {...props} />
+                ),
+                li: ({ node, ...props }) => (
+                  <li className="mb-2" {...props} />
+                ),
+              }}
+            >
+                {fetchedData.quiz}
+              </ReactMarkdown>
             </div>
-          ) : (
-            children
-          )}
-        </div>
+          </div>
+        ) : (
+          children
+        )}
+      </div>
       </main>
     </div>
   );
