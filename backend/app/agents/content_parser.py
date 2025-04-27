@@ -42,7 +42,7 @@ async def call_asi_llm(prompt: str) -> str:
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.5, # how random the llm is
         "stream": False, # generates everything at once (better for us)
-        "max_tokens": 600
+        "max_tokens": 300
     }
 
     async with httpx.AsyncClient() as client:
@@ -58,7 +58,7 @@ async def call_asi_llm(prompt: str) -> str:
                 print(f"🔥 Unexpected error when calling ASI-One: {str(e)}")
 
 # helper to chunk long pdfs
-def chunk_text(text, max_chars=500):
+def chunk_text(text, max_chars=100):
     # Split the text into chunks no larger than max_chars
     chunks = []
     while len(text) > max_chars:
@@ -76,6 +76,7 @@ def generate_prompt(content: str, grade_level: str):
         f"Summarize the following text into numbered bullet points ranked by importance. Focus mainly on course content."
         f"Explain each idea for a {grade_level} student in 2-3 sentences:\n\n"
         f"{content}\n\n"
+        f"Respond ONLY with a numbered list. No extra commentary."
     )
 
 # log on startup

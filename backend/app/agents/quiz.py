@@ -1,5 +1,7 @@
 from uagents import Agent, Context, Model
+import sys
 import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 import httpx
 from dotenv import load_dotenv
 from app.storage import quiz_store
