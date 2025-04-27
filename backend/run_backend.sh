@@ -1,33 +1,3 @@
-set -e # stop if any command fails
-
-echo "Activating virtual environment..."
-
-# Create venv if it doesn't exist
-if [ ! -d "venv" ]; then
-  echo "venv not found. Creating virtual environment..."
-  # Try python3 first, fallback to python
-  if command -v python3 &> /dev/null; then
-      python3 -m venv venv
-  elif command -v python &> /dev/null; then
-      python -m venv venv
-  else
-      echo "Python is not installed."
-      exit 1
-  fi
-fi
-
-# Activate virtual environment
-if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "darwin"* ]]; then
-    # Linux or MacOS
-    source venv/bin/activate
-elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "cygwin"* || "$OSTYPE" == "win32" ]]; then
-    # Windows (Git Bash or WSL)
-    .venv/Scripts/activate
-else
-    echo "Unsupported OS: $OSTYPE"
-    exit 1
-fi
-
 echo "Installing dependencies..."
 pip install -r requirements.txt
 
