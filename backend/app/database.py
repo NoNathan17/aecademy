@@ -19,6 +19,7 @@ client = MongoClient(MONGO_URI)
 
 db = client["test"]
 queries_collection = db["queries"]
+#get names of previous que
 @app.post("/api/queries")
 async def get_queries(request: Request):
     body = await request.json()
@@ -32,6 +33,15 @@ async def get_queries(request: Request):
     queries_list = [doc.get("question") for doc in user_queries]
 
     return queries_list
+
+#code for getting info from clicking on previous queries
+@app.get("/api/query/{query_name}")
+async def get_query(query_name: str):
+    query = queries_collection.find_one({"question": query_name})
+
+    # Convert the _id to a string so it's JSON safe
+    query["_id"] = str(query["_id"])
+    return query
 def get_queries_by_user_id(user_id: str):
     """
     Fetches all documents from the 'queries' collection where 'userId' matches the provided user_id.
