@@ -47,7 +47,7 @@ async def call_asi_llm(prompt: str) -> str:
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.2,
         "stream": False,
-        "max_tokens": 400
+        "max_tokens": 500
     }
 
     async with httpx.AsyncClient() as client:
