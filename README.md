@@ -2,8 +2,8 @@
 aecademy is an AI-driven learning tool that provides an alternate study path for students who struggle with dense lecture slides and long textbooks. This project was built as part of LA Hacks 2025 for the Hack2School Track.
 
 ## How Does It Work
-- aecademy leverages fetch.ai's platform by creating AI uAgents to ascbchronously perform tasks in the background, including pdf management, summary generation, quiz creation, and handling communication between the frontend and backend.
-- uAgents communicate with each in the background, providing a service where users can import pdfs of lecture slides or textbooks, recieving key concepts and practice problems in return
+- aecademy leverages fetch.ai's platform by creating AI uAgents to ascbchronously perform tasks in the background, including pdf management, summary generation, quiz creation, and handling communication between the frontend and backend
+- uAgents communicate with each in the background, providing a service where users can import pdfs of lecture slides or textbooks with a personalized skill level, which are then sent to Fetch's LLM for quuerying.
 - User queries and profiles are stored in MongoDB Atlas, allowing for users to access past entries as study material.
 
 ## How to Use
