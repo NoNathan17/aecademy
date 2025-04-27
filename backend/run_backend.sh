@@ -26,4 +26,8 @@ echo "Starting Quiz Maker Agent..."
 python3 app/agents/quiz.py &
 sleep 2
 
+echo "Run Database"
+python3 app/database.py &
+sleep 2
+
 echo "✅ All backend services started!"
