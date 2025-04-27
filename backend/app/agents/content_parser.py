@@ -73,10 +73,9 @@ def chunk_text(text, max_chars=500):
 # helper for picking prompt for grade level
 def generate_prompt(content: str, grade_level: str):
     return (
-        f"Summarize the following text into clear numbered points. "
+        f"Summarize the following text into numbered bullet points ranked by importance. Focus mainly on course content."
         f"Explain each idea for a {grade_level} student in 2-3 sentences:\n\n"
         f"{content}\n\n"
-        f"Only return the numbered key ideas. No intro or outro."
     )
 
 # log on startup
