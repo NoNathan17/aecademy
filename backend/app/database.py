@@ -75,6 +75,18 @@ def add_query(user_id: str, question: str, answer: str, timestamp: str):
         print(f"Failed to insert document: {str(e)}")
         return None
 
+# POST endpoint to receive the data
+@app.post("/api/submit")
+async def receive_data(request: Request):
+    data = await request.json()
+
+    print("📥 Received data at backend:")
+    print("Filename:", data.get('filename'))
+    print("Email:", data.get('email'))
+    print("Ideas:", data.get('ideas'))
+    print("Quiz:", data.get('quiz'))
+
+    return {"message": "Data received successfully!"}
 
 if __name__ == "__main__":
     add_query("ningyl1@uci.edu", "lorem.pdf", "asdasdasdajdsadsasdasdajasdasdajsdisdpkofdbo[pkdrokweopgdjdhdnbndfhfddfgsdfdhuiasdfhusuaaaaaaaaaaaaaaaofsodfhaosidaiodhaoshdioasdaodasdhaosdhaosd", "aaaaaaaaaaaaaaaaaasdasdasdasdasdaksdasdjasdasdasdjadsjajsdjasdjajsdjasdddddddddddddddddddddddasdjasdjaksdjajsdndjcjvnajsdkajsdnansjdkajsdnjskajsaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
