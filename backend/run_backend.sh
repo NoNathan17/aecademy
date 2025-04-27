@@ -1,10 +1,10 @@
-#!/bin/bash
+set -e # stop if any command fails
 
 echo "Activating virtual environment..."
 
 # Create venv if it doesn't exist
 if [ ! -d "venv" ]; then
-  echo "🛠 venv not found. Creating virtual environment..."
+  echo "venv not found. Creating virtual environment..."
   # Try python3 first, fallback to python
   if command -v python3 &> /dev/null; then
       python3 -m venv venv
@@ -22,13 +22,13 @@ if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "darwin"* ]]; then
     source venv/bin/activate
 elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "cygwin"* || "$OSTYPE" == "win32" ]]; then
     # Windows (Git Bash or WSL)
-    source venv/Scripts/activate
+    .venv/Scripts/activate
 else
     echo "Unsupported OS: $OSTYPE"
     exit 1
 fi
 
-echo "📦 Installing dependencies..."
+echo "Installing dependencies..."
 pip install -r requirements.txt
 
 # Choose python3 or python dynamically
