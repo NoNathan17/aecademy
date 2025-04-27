@@ -6,7 +6,6 @@ import DashboardLayout from '@/components/DashboardLayout';
 import ReactMarkdown from 'react-markdown';
 import { useUser } from "@clerk/nextjs";
 
-
 export default function DashboardPage() {
   const { user} = useUser();
   const [file, setFile] = useState<File | null>(null);
@@ -53,7 +52,34 @@ export default function DashboardPage() {
     const data = await response.json()
     return data.upload_id;
   }
-  
+
+  // ADD THIS FUNCTION
+  async function sendDataToBackend(filename: string, email: string, keyIdeas: string[], quiz: any[]) {
+    try {
+      const response = await fetch('http://localhost:9000/api/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          filename,
+          email,
+          keyIdeas,
+          quiz,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send data to backend');
+      }
+
+      console.log('✅ Data successfully sent to backend!');
+    } catch (error) {
+      console.error('❌ Error sending data to backend:', error);
+    }
+  }
+  // END ADDITION
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -126,6 +152,15 @@ export default function DashboardPage() {
     if (keyIdeasReady && quizReady) {
       console.log("✅ Both ready, stopping loading...");
       setLoading(false); 
+
+      if (file && user) {
+        sendDataToBackend(
+          file.name,
+          user.emailAddresses[0]?.emailAddress ?? '',
+          keyIdeas,
+          quiz
+        );
+      }
     }
   }, [keyIdeasReady, quizReady]);
 
