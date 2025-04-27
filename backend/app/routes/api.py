@@ -7,7 +7,8 @@ import pdfplumber
 import io
 import uuid
 from fastapi.responses import JSONResponse
-from app.agents.quiz import quiz_store
+from app.storage import quiz_store
+from app.storage import key_ideas_store
 
 router = APIRouter()
 
@@ -15,8 +16,6 @@ class ContentRequest(BaseModel):
     content: str
 
 CONTENT_PARSER_AGENT_ADDRESS = "agent1qf80v4k92z2tu7pl4smc9pwgq8kdg9m67u42tas5u4xu64vgf9nt6fxu3k9"
-
-key_ideas_store = {}
 
 @router.post("/upload-pdf/")
 async def upload_pdf(file: UploadFile = File(...), grade_level: str = Form()):
